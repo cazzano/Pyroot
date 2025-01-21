@@ -42,42 +42,59 @@ func checkPythonVersion() error {
 		pythonCmd = "python"
 	} else {
 		logError("Python not found!")
-		return fmt.Errorf("Python not found")
+		return fmt.Errorf("python not found")
 	}
 
 	// Check Python version
 	cmd := exec.Command(pythonCmd, "--version")
 	output, err := cmd.Output()
 	if err != nil {
-		return err
+		return fmt.Errorf("failed to get Python version: %v", err)
 	}
 
 	pythonVersion := strings.TrimSpace(string(output))
 	if strings.Compare(pythonVersion, minVersion) < 0 {
 		logError(fmt.Sprintf("Minimum Python version %s required. Current: %s", minVersion, pythonVersion))
-		return fmt.Errorf("minimum Python version required")
+		return fmt.Errorf("minimum Python version %s required", minVersion)
 	}
 
 	logInfo(fmt.Sprintf("Python version check passed: %s", pythonVersion))
 	return nil
 }
 
-// Detect existing virtual environment
+// Detect existing virtual environment in home directory
 func detectVenv() (string, error) {
-	venvPaths := []string{"venv", ".venv", "env"}
+	homeDir, err := os.UserHomeDir()
+	if err != nil {
+		return "", fmt.Errorf("could not get home directory: %v", err)
+	}
+
+	venvPaths := []string{
+		filepath.Join(homeDir, "venv"),
+		filepath.Join(homeDir, ".venv"),
+		filepath.Join(homeDir, "env"),
+	}
+
 	for _, path := range venvPaths {
 		if _, err := os.Stat(path); err == nil {
-			if _, err := os.Stat(filepath.Join(path, "bin", "activate")); err == nil {
+			activatePath := filepath.Join(path, "bin", "activate")
+			if _, err := os.Stat(activatePath); err == nil {
 				return path, nil
 			}
 		}
 	}
-	return "", fmt.Errorf("no virtual environment detected")
+
+	return "", fmt.Errorf("no virtual environment detected in home directory")
 }
 
-// Create a new virtual environment
+// Create a new virtual environment in home directory
 func createVirtualEnv() (string, error) {
-	venvName := "venv"
+	homeDir, err := os.UserHomeDir()
+	if err != nil {
+		return "", fmt.Errorf("could not get home directory: %v", err)
+	}
+
+	venvName := filepath.Join(homeDir, "venv")
 	logInfo("Creating virtual environment...")
 
 	if err := checkPythonVersion(); err != nil {
@@ -87,7 +104,7 @@ func createVirtualEnv() (string, error) {
 	cmd := exec.Command("python3", "-m", "venv", venvName)
 	if err := cmd.Run(); err != nil {
 		logError("Failed to create virtual environment")
-		return "", err
+		return "", fmt.Errorf("virtual environment creation failed: %v", err)
 	}
 
 	logInfo("Virtual environment created successfully in " + venvName)
@@ -98,7 +115,7 @@ func createVirtualEnv() (string, error) {
 func printVenvInfo(venvPath string) {
 	logInfo("Virtual Environment Details:")
 	fmt.Printf("Path: %s\n", venvPath)
-	fmt.Printf("Python Executable: % s/bin/python\n", venvPath)
+	fmt.Printf("Python Executable: %s/bin/python\n", venvPath)
 
 	cmd := exec.Command(filepath.Join(venvPath, "bin", "python"), "--version")
 	output, err := cmd.Output()
@@ -109,21 +126,36 @@ func printVenvInfo(venvPath string) {
 
 // Run the virtual environment management workflow
 func runVenv() {
-	projectDir, _ := os.Getwd()
-	os.Chdir(projectDir)
+	homeDir, err := os.UserHomeDir()
+	if err != nil {
+		logError("Could not get home directory: " + err.Error())
+		return
+	}
 
+	// Change to home directory
+	os.Chdir(homeDir)
+
+	// Detect or create virtual environment
 	venvPath, err := detectVenv()
 	if err != nil {
 		logWarn(err.Error())
 		venvPath, err = createVirtualEnv()
 		if err != nil {
-			logError(err.Error())
+			logError("Virtual environment setup failed: " + err.Error())
 			return
 		}
 	} else {
 		logInfo("Existing virtual environment detected: " + venvPath)
 	}
 
+	// Print virtual environment details
 	printVenvInfo(venvPath)
-	SourceVenv(venvPath) // Call the SourceVenv function to provide activation command
+
+	// Provide virtual environment activation instructions
+	SourceVenv(venvPath)
+
+	// Set alias for pip3
+	if err := SetAlias(venvPath); err != nil {
+		logError("Failed to set alias: " + err.Error())
+	}
 }
