@@ -1,0 +1,1 @@
+now i want to create a new module named alias_2.go and it will also create a new alias after pypip as (alias pyvnv="~/venv/bin/python3") and it's logic will be same as pypip has .
