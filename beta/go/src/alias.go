@@ -29,7 +29,8 @@ func SetAlias(venvPath string) error {
 		aliasCommand = fmt.Sprintf("alias pypip=\"%s/bin/pip3\"", venvPath)
 	case "zsh":
 		configFile = filepath.Join(homeDir, ".zshrc")
-		aliasCommand = fmt.Sprintf("alias pypip=\"%s/bin/pip3\"", venvPath)
+		// Use different alias syntax for Zsh
+		aliasCommand = fmt.Sprintf("alias pypip='%s/bin/pip3'", venvPath)
 	case "fish":
 		configFile = filepath.Join(homeDir, ".config/fish/config.fish")
 		aliasCommand = fmt.Sprintf("alias pypip \"%s/bin/pip3\"", venvPath)
@@ -50,7 +51,8 @@ func SetAlias(venvPath string) error {
 	}
 	defer file.Close()
 
-	if _, err := file.WriteString(aliasCommand + "\n"); err != nil {
+	// Add a newline before the alias to ensure it's on a new line
+	if _, err := file.WriteString("\n" + aliasCommand + "\n"); err != nil {
 		return err
 	}
 
@@ -66,5 +68,7 @@ func aliasExists(configFile, aliasCommand string) bool {
 		return false
 	}
 
-	return strings.Contains(string(data), aliasCommand)
+	// Trim whitespace and check for exact or partial match
+	content := strings.TrimSpace(string(data))
+	return strings.Contains(content, strings.TrimSpace(aliasCommand))
 }
