@@ -8,7 +8,7 @@ import (
 	"path/filepath"
 )
 
-// handleBuild checks for Go files and runs the go build command.
+// handleBuild checks for Python files and runs the PyInstaller command.
 func handleBuild() error {
 	// Get the current directory
 	currentDir, err := os.Getwd()
@@ -16,19 +16,19 @@ func handleBuild() error {
 		return fmt.Errorf("error getting current directory: %v", err)
 	}
 
-	// Check for Go files in the current directory
-	hasGoFile, err := checkForGoFiles(currentDir)
+	// Check for Python files in the current directory
+	hasPythonFile, err := checkForPythonFiles(currentDir)
 	if err != nil {
 		return err
 	}
 
-	if !hasGoFile {
-		return fmt.Errorf("no Go files found in the current directory")
+	if !hasPythonFile {
+		return fmt.Errorf("no Python files found in the current directory")
 	}
 
-	// Build the project in the current directory
-	cmd := exec.Command("go", "build", ".") // Use "." to build all Go files in the current directory
-	output, err := cmd.CombinedOutput()     // Capture combined output (stdout and stderr)
+	// Build the project using PyInstaller
+	cmd := exec.Command("/home/cazzano/venv/bin/python3", "-m", "PyInstaller", "--onefile", "main.py") // Use PyInstaller to build the Python file
+	output, err := cmd.CombinedOutput()                                                                // Capture combined output (stdout and stderr)
 	if err != nil {
 		return fmt.Errorf("error building project: %v\nOutput: %s", err, output)
 	}
@@ -48,8 +48,8 @@ func handleBuild() error {
 	}
 
 	// Move the compiled binary to the target/release directory
-	binaryName := filepath.Base(currentDir) // Use the current directory name as the binary name
-	srcBinaryPath := filepath.Join(currentDir, binaryName)
+	binaryName := "main"                                           // Assuming the output binary is named "main"
+	srcBinaryPath := filepath.Join(currentDir, "dist", binaryName) // PyInstaller outputs to the "dist" directory
 	destBinaryPath := filepath.Join(releaseDir, binaryName)
 
 	if err := os.Rename(srcBinaryPath, destBinaryPath); err != nil {
@@ -60,16 +60,16 @@ func handleBuild() error {
 	return nil
 }
 
-// Helper function to check for Go files in a directory
-func checkForGoFiles(dir string) (bool, error) {
+// Helper function to check for Python files in a directory
+func checkForPythonFiles(dir string) (bool, error) {
 	entries, err := os.ReadDir(dir)
 	if err != nil {
 		return false, fmt.Errorf("error reading directory: %v", err)
 	}
 
 	for _, entry := range entries {
-		if !entry.IsDir() && filepath.Ext(entry.Name()) == ".go" {
-			fmt.Printf("[DEBUG] Found Go file in %s: %s\n", dir, entry.Name())
+		if !entry.IsDir() && filepath.Ext(entry.Name()) == ".py" {
+			fmt.Printf("[DEBUG] Found Python file in %s: %s\n", dir, entry.Name())
 			return true, nil
 		}
 	}

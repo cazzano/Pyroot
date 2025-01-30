@@ -24,6 +24,10 @@ func main() {
 		if err := handleNew(folderName); err != nil {
 			fmt.Println("Error:", err)
 		}
+	case "build":
+		if err := handleBuild(); err != nil {
+			fmt.Println("Error:", err)
+		}
 	case "-v":
 		DisplayVersion()
 	case "-h":
