@@ -27,8 +27,12 @@ func handleBuild() error {
 	}
 
 	// Build the project using PyInstaller
-	cmd := exec.Command("/home/cazzano/venv/bin/python3", "-m", "PyInstaller", "--onefile", "main.py") // Use PyInstaller to build the Python file
-	output, err := cmd.CombinedOutput()                                                                // Capture combined output (stdout and stderr)
+	homeDir, err := os.UserHomeDir()
+	if err != nil {
+		return fmt.Errorf("error getting home directory: %v", err)
+	}
+	cmd := exec.Command(filepath.Join(homeDir, "venv", "bin", "python3"), "-m", "PyInstaller", "--onefile", "main.py") // Use PyInstaller to build the Python file
+	output, err := cmd.CombinedOutput()                                                                                // Capture combined output (stdout and stderr)
 	if err != nil {
 		return fmt.Errorf("error building project: %v\nOutput: %s", err, output)
 	}
