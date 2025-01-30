@@ -8,7 +8,7 @@ import (
 
 func handleInit() error {
 	// Run the command to initialize the Python Requirements
-	cmd := exec.Command("touch requirements.txt")
+	cmd := exec.Command("touch", "requirements.txt")
 	output, err := cmd.CombinedOutput() // Capture combined output (stdout and stderr)
 	if err != nil {
 		return fmt.Errorf("error initializing requirements: %v\nOutput: %s", err, output)
