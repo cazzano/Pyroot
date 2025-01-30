@@ -28,6 +28,10 @@ func main() {
 		if err := handleBuild(); err != nil {
 			fmt.Println("Error:", err)
 		}
+	case "run":
+		if err := handleRun(); err != nil {
+			fmt.Println("Error:", err)
+		}
 	case "-v":
 		DisplayVersion()
 	case "-h":
