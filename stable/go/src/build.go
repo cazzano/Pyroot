@@ -6,6 +6,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"time"
 )
 
 // handleBuild checks for Python files and runs the PyInstaller command.
@@ -32,11 +33,25 @@ func handleBuild() error {
 		return fmt.Errorf("error getting home directory: %v", err)
 	}
 	cmd := exec.Command(filepath.Join(homeDir, "venv", "bin", "python3"), "-m", "PyInstaller", "--onefile", "main.py") // Use PyInstaller to build the Python file
-	output, err := cmd.CombinedOutput()                                                                                // Capture combined output (stdout and stderr)
+
+	// Initialize progress bar
+	progress := NewProgress(100) // Assuming the build process has 100 steps for demonstration
+
+	// Start a goroutine to simulate progress
+	go func() {
+		for i := 0; i < 100; i++ {
+			time.Sleep(50 * time.Millisecond) // Simulate work being done
+			progress.Increment()
+		}
+	}()
+
+	output, err := cmd.CombinedOutput() // Capture combined output (stdout and stderr)
 	if err != nil {
+		progress.Complete() // Complete the progress bar
 		return fmt.Errorf("error building project: %v\nOutput: %s", err, output)
 	}
 
+	progress.Complete() // Complete the progress bar
 	fmt.Printf("Build successful! Output:\n%s\n", output)
 
 	// Change to the parent directory
@@ -60,7 +75,7 @@ func handleBuild() error {
 		return fmt.Errorf("error moving binary to release directory: %v", err)
 	}
 
-	fmt.Printf("Binary moved to: %s\n", destBinaryPath)
+	fmt.Printf("Binary moved to: %s\n", destBinaryPath) // Corrected line
 	return nil
 }
 
