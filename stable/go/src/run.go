@@ -6,6 +6,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"strings"
 )
 
 // handleRun runs the Python script with optional arguments
@@ -29,19 +30,37 @@ func handleRun() error {
 	// Prepare the command arguments
 	args := os.Args[2:] // Skip the "run" command
 
-	// Limit arguments to 10
-	if len(args) > 10 {
-		return fmt.Errorf("maximum of 10 arguments allowed, received %d", len(args))
+	// Check if the first argument is "-one"
+	if len(args) > 0 && args[0] == "-one" {
+		if len(args) < 2 {
+			return fmt.Errorf("please provide a filename after '-one'")
+		}
+		filename := args[1]
+		if !strings.HasSuffix(filename, ".py") {
+			return fmt.Errorf("the specified file must have a .py extension")
+		}
+
+		// Construct the command to run the specified Python file
+		cmd := exec.Command(filepath.Join(os.Getenv("HOME"), "venv", "bin", "python3"), filename)
+
+		// Set the command's stdout and stderr to the current process's
+		cmd.Stdout = os.Stdout
+		cmd.Stderr = os.Stderr
+		cmd.Stdin = os.Stdin
+
+		// Print the command being executed (for debugging)
+		fmt.Printf("[DEBUG] Running command: %s %s\n", filepath.Join(os.Getenv("HOME"), "venv", "bin", "python3"), filename)
+
+		// Run the command
+		err = cmd.Run()
+		if err != nil {
+			return fmt.Errorf("error running Python file: %v", err)
+		}
+		return nil
 	}
 
-	// Construct the full command
-	cmdArgs := []string{"main.py"} // Assuming main.py is the script to run
-
-	// Add user-provided arguments
-	cmdArgs = append(cmdArgs, args...)
-
-	// Create the command
-	cmd := exec.Command(filepath.Join(os.Getenv("HOME"), "venv", "bin", "python3"), cmdArgs...)
+	// If no specific file is provided, run the main.py file
+	cmd := exec.Command(filepath.Join(os.Getenv("HOME"), "venv", "bin", "python3"), "main.py")
 
 	// Set the command's stdout and stderr to the current process's
 	cmd.Stdout = os.Stdout
@@ -49,12 +68,12 @@ func handleRun() error {
 	cmd.Stdin = os.Stdin
 
 	// Print the command being executed (for debugging)
-	fmt.Printf("[DEBUG] Running command: %s %v\n", filepath.Join(os.Getenv("HOME"), "venv", "bin", "python3"), cmdArgs)
+	fmt.Printf("[DEBUG] Running command: %s main.py\n", filepath.Join(os.Getenv("HOME"), "venv", "bin", "python3"))
 
 	// Run the command
 	err = cmd.Run()
 	if err != nil {
-		return fmt.Errorf("error running Python file: %v", err)
+		return fmt.Errorf("error running main.py: %v", err)
 	}
 
 	return nil
