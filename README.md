@@ -19,7 +19,7 @@ git clone https://github.com/cazzano/pyroot.git
 cd pyroot/stable/go/src/
 
 # Install the tool
-go build && mv hello pyroot && sudo mv pyroot /usr/bin && echo "You Installed It Hah !!!"
+go build && mv src pyroot && sudo mv pyroot /usr/bin && echo "You Installed It Hah !!!"
 ```
 
 ## 🚀 Usage
