@@ -1,0 +1,22 @@
+Usage pyroot <command>
+        Commands:
+        init     - Initialize the existing project with requirements.txt
+        vnv      - Initialize some commands to make your venv of python
+        new      - Intitialize a new project with new structure
+        build    - Build the project to target/release folder
+        run      - Runs the project within src folder
+        run --1  - Runs a specifc module or file
+        --v      - Display the version information
+        --h      - Display this help message
+
+       Examples:
+        1. pyroot new my-project
+           cd my-project/src
+           pyroot run
+           pyroot build
+        2. pyroot new , this will creates an structure of project {src,requirements.txt,target}
+        3. pyroot build , this will automatically builds an binary to target/release/binary using Pyinstaller
+        4. pyroot run , this will runs the program within src folder
+        5. pyroot run --1, this will only runs a specific module or file of python
+        6. python vnv , this will basically manages your all-in-one venv (virtual environment) of python and also make pyvnv and pypip to your shells
+        7. pyvnv acts as python3 and pypip acts as pip , to make sure stay way from global conflicts.

@@ -32,9 +32,9 @@ func main() {
 		if err := handleRun(); err != nil {
 			fmt.Println("Error:", err)
 		}
-	case "-v":
+	case "--v":
 		DisplayVersion()
-	case "-h":
+	case "--h":
 		DisplayHelp()
 	case "init":
 		if err := handleInit(); err != nil {

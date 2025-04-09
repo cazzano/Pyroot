@@ -31,7 +31,7 @@ func handleRun() error {
 	args := os.Args[2:] // Skip the "run" command
 
 	// Check if the first argument is "-one"
-	if len(args) > 0 && args[0] == "-one" {
+	if len(args) > 0 && args[0] == "--1" {
 		if len(args) < 2 {
 			return fmt.Errorf("please provide a filename after '-one'")
 		}
