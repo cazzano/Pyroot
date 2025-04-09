@@ -41,5 +41,17 @@ func handleNew(folderName string) error {
 	}
 	fmt.Printf("Created file: %s\n", goModPath)
 
+	// Create the .gitignore file
+	gitignoreContent := `**/target/
+**/build/
+**/dist/
+**/main.spec`
+	gitignorePath := filepath.Join(folderName, ".gitignore")
+	err = os.WriteFile(gitignorePath, []byte(gitignoreContent), 0644)
+	if err != nil {
+		return fmt.Errorf("error creating .gitignore file: %v", err)
+	}
+	fmt.Printf("Created file: %s\n", gitignorePath)
+
 	return nil
 }
