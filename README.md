@@ -24,7 +24,7 @@ go build && mv src pyroot && sudo mv pyroot /usr/bin && echo "You Installed It H
 ## Installation From Release
 
 ```bash
-wget https://github.com/cazzano/pyroot/releases/download/vpn/pyroot_vr-1.0_x86_64_arch.zip;
+wget https://github.com/cazzano/pyroot/releases/download/python/pyroot_vr-1.0_x86_64_arch.zip;
 
 unzip pyroot_vr-1.0_x86_64_arch.zip && sudo mv pyroot /usr/bin/ && rm pyroot_vr-1.0_x86_64_arch.zip && echo "Yeah You Installed It!!!!";
 ```
