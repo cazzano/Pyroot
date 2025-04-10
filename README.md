@@ -10,7 +10,7 @@
 - **Execution Control** - Run Python files directly with support for arguments
 - **Flexible Usage** - Target specific files or modules for execution
 
-## 📦 Installation
+## 📦 Build && Installation From Source
 ```bash
 # Clone the repository
 git clone https://github.com/cazzano/pyroot.git
@@ -21,6 +21,14 @@ cd pyroot/stable/go/src/
 # Install the tool
 go build && mv src pyroot && sudo mv pyroot /usr/bin && echo "You Installed It Hah !!!"
 ```
+## Installation From Release
+
+```bash
+curl -L -o pyroot_vr-1.0_x86_64_arch.zip https://github.com/cazzano/pyroot/releases/download/vpn/pyroot_vr-1.0_x86_64_arch.zip
+
+unzip pyroot_vr-1.0_x86_64_arch.zip && sudo mv svpn /usr/bin/ && rm pyroot_vr-1.0_x86_64_arch.zip
+```
+
 
 ## 🚀 Usage
 PyRoot provides several commands to simplify your Python development workflow:
